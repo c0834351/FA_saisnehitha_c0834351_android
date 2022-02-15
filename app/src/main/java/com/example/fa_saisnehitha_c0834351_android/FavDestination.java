@@ -3,14 +3,21 @@ package com.example.fa_saisnehitha_c0834351_android;
 public class FavDestination {
     int id;
     String address;
-    Double favLatitude,favLongitude;
+    Double Latitude, Longitude;
     String date;
 
-    public FavDestination(int id, String address, Double favLatitude, Double favLongitude, String date) {
+    public FavDestination(String address, Double latitude, Double longitude, String date) {
+        this.address = address;
+        this.Latitude = latitude;
+        this.Longitude = longitude;
+        this.date = date;
+    }
+
+    public FavDestination(int id, String address, Double latitude, Double longitude, String date) {
         this.id = id;
         this.address = address;
-        this.favLatitude = favLatitude;
-        this.favLongitude = favLongitude;
+        Latitude = latitude;
+        Longitude = longitude;
         this.date = date;
     }
 
@@ -18,39 +25,19 @@ public class FavDestination {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public Double getLatitude() {
+        return Latitude;
     }
 
-    public Double getFavLatitude() {
-        return favLatitude;
-    }
-
-    public void setFavLatitude(Double favLatitude) {
-        this.favLatitude = favLatitude;
-    }
-
-    public Double getFavLongitude() {
-        return favLongitude;
-    }
-
-    public void setFavLongitude(Double favLongitude) {
-        this.favLongitude = favLongitude;
+    public Double getLongitude() {
+        return Longitude;
     }
 
     public String getDate() {
         return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 }

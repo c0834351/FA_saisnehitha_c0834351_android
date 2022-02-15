@@ -7,12 +7,15 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -47,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int REQUEST_CODE = 1;
     public static final int UPDATE_INTERVAL = 5000;
     public static final int FASTEST_INTERVAL = 3000;
+    private static final int SECOND_ACTIVITY_REQUEST_CODE = 0;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -54,8 +58,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng userLatLng;
 
     DatabaseHelper databaseHelper;
+    FavDestination favDestination;
     double userLat, userLong, destLat, desLong;
     String countryName;
+
+    Button satellite,hybrid,terrain,getSavedDestinations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +74,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         databaseHelper = new DatabaseHelper(this);
+        satellite =findViewById(R.id.btn_satellite);
+        hybrid = findViewById(R.id.btn_hybrid);
+        terrain = findViewById(R.id.btn_normal);
+        getSavedDestinations = findViewById(R.id.btn_fav_destination);
+        satellite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            }
+        });
+        hybrid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            }
+        });
+        terrain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+            }
+        });
+        getSavedDestinations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapsActivity.this,DestinationActivity.class);
+                startActivityForResult(intent, SECOND_ACTIVITY_REQUEST_CODE);
+            }
+        });
+
         getUserLocation();
         if (!isGrantedLocationPer()) {
             requestLocationPermission();
@@ -205,7 +242,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String date = simpleDateFormat.format(calendar.getTime());
-        if (databaseHelper.addDestination(countryN, lati, longi, date))
+        favDestination = new FavDestination(countryN,Double.valueOf(lati),Double.valueOf(longi),date);
+        if (databaseHelper.addDestination(favDestination.getAddress(), String.valueOf(favDestination.getLatitude()),String.valueOf(favDestination.getLongitude()), favDestination.getDate()))
             Toast.makeText(MapsActivity.this, "Destination added", Toast.LENGTH_SHORT).show();
         else
             Toast.makeText(MapsActivity.this, "Destination is not available:", Toast.LENGTH_SHORT).show();

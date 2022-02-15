@@ -1,9 +1,111 @@
-<?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+
+
+<!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:map="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:id="@+id/map"-->
+<!--    android:name="com.google.android.gms.maps.SupportMapFragment"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".MapsActivity" />-->
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity" />
+    tools:context=".MapsActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Favourite Destinations"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:id="@+id/detailscreentitle"
+        android:layout_marginTop="10dp"
+        android:textSize="25sp"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_fav_destination"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:text="saved destinations"
+        android:layout_below="@id/detailscreentitle"/>
+
+
+
+<!--    <TextView-->
+<!--        android:layout_width="120dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/userLatitude"-->
+<!--        android:text="Latitude:"-->
+<!--        android:layout_below="@id/detailscreentitle"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:textAlignment="viewEnd"-->
+<!--        android:textSize="15sp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textColor="@color/black"/>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/userLat"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/detailscreentitle"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:layout_toRightOf="@id/userLatitude"-->
+<!--        android:paddingStart="5dp"-->
+<!--        android:textColor="@color/black" />-->
+
+    <fragment
+
+        android:id="@+id/map"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/btn_fav_destination"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        tools:context=".MapsActivity" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_hybrid"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:text="Hybrid"
+        android:layout_below="@id/map"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_normal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:text="TERRAIN"
+        android:layout_below="@id/btn_hybrid"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_satellite"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:text="Satellite"
+        android:layout_below="@id/btn_normal"/>
+
+
+</RelativeLayout>
+
+
