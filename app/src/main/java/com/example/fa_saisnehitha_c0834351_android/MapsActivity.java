@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -29,8 +31,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.fa_saisnehitha_c0834351_android.databinding.ActivityMapsBinding;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
 
@@ -45,9 +51,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
-    private LatLng userLatLng;
+    LatLng userLatLng;
 
+    DatabaseHelper databaseHelper;
     double userLat, userLong, destLat, desLong;
+    String countryName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +63,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        databaseHelper = new DatabaseHelper(this);
         getUserLocation();
         if (!isGrantedLocationPer()) {
             requestLocationPermission();
@@ -143,11 +150,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapLongClick(@NonNull LatLng latLng) {
                 Location location = new Location("Your next destination selection");
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                 location.setLatitude(latLng.latitude);
                 location.setLongitude(latLng.longitude);
                 userLatLng = latLng;
                 desLong = latLng.longitude;
                 destLat = latLng.latitude;
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(destLat,desLong,1);
+                    if(addressList.get(0).getCountryName()== null){
+                        countryName = "";
+                    }else
+                        countryName = addressList.get(0).getCountryName();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(userLatLng.latitude+"***********************");
+                System.out.println(userLatLng.longitude+"******************");
+                System.out.println(countryName+"******************");
                 if(marker != null){
                     marker.remove();
                 }
@@ -159,9 +179,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 alertDialog.setPositiveButton("yes",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                //addressOfPlaces(destLat, desLong);
+                                addingNextDestion(String.valueOf(destLat), String.valueOf(desLong), countryName);
+                                //addingNextDestion(destLat,desLong,countryName);
                                 if(marker!= null) {
-                                    // marker.remove();
+                                    marker.remove();
                                 }
                             }
                         });
@@ -180,7 +201,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void addingNextDestion(String lati, String longi, String countryN) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        String date = simpleDateFormat.format(calendar.getTime());
+        if (databaseHelper.addDestination(countryN, lati, longi, date))
+            Toast.makeText(MapsActivity.this, "Destination added", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(MapsActivity.this, "Destination is not available:", Toast.LENGTH_SHORT).show();
 
+    }
 
     private void setDestinationMarker(Location location) {
         LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -199,7 +229,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMarkerDragEnd(@NonNull Marker marker) {
-
+        destLat = marker.getPosition().latitude;
+        desLong = marker.getPosition().longitude;
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
     }
 
     @Override
