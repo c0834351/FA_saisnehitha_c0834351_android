@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -73,9 +74,9 @@ public class DestinationActivity extends AppCompatActivity {
                         double latitude = place.getLatitude();
                         double longitude = place.getLongitude();
                         Intent intent = new Intent(DestinationActivity.this,MapsActivity.class);
-                        intent.putExtra("latitude",latitude);
-                        intent.putExtra("longitude",longitude);
-                        LatLng latLng = new LatLng(latitude,longitude);
+//                        intent.putExtra("latitude",latitude);
+//                        intent.putExtra("longitude",longitude);
+//                        LatLng latLng = new LatLng(latitude,longitude);
                         setResult(MapsActivity.RESULT_OK, intent);
                         finish();
                         break;

@@ -11,12 +11,17 @@
 <!--    tools:context=".MapsActivity" />-->
 
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MapsActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
@@ -27,42 +32,32 @@
         android:textStyle="bold"
         android:textAlignment="center"
         android:id="@+id/detailscreentitle"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:textSize="25sp"/>
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/spinner"
+            android:background="@android:drawable/editbox_background">
+
+        </Spinner>
+        <Button
+            android:id="@+id/find_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="find Nearby Places"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_fav_destination"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
         android:text="saved destinations"
-        android:layout_below="@id/detailscreentitle"/>
+        android:layout_below="@id/find_btn"/>
 
-
-
-<!--    <TextView-->
-<!--        android:layout_width="120dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:id="@+id/userLatitude"-->
-<!--        android:text="Latitude:"-->
-<!--        android:layout_below="@id/detailscreentitle"-->
-<!--        android:layout_marginTop="30dp"-->
-<!--        android:textAlignment="viewEnd"-->
-<!--        android:textSize="15sp"-->
-<!--        android:textStyle="bold"-->
-<!--        android:textColor="@color/black"/>-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/userLat"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/detailscreentitle"-->
-<!--        android:layout_marginTop="30dp"-->
-<!--        android:layout_toRightOf="@id/userLatitude"-->
-<!--        android:paddingStart="5dp"-->
-<!--        android:textColor="@color/black" />-->
-
+    </LinearLayout>
     <fragment
 
         android:id="@+id/map"
@@ -73,9 +68,13 @@
         android:layout_below="@+id/btn_fav_destination"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="350dp"
         tools:context=".MapsActivity" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -104,8 +103,8 @@
         android:layout_marginRight="50dp"
         android:text="Satellite"
         android:layout_below="@id/btn_normal"/>
+    </LinearLayout>
 
-
-</RelativeLayout>
+</LinearLayout>
 
 

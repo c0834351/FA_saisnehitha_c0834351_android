@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2140625" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.225" />
         <entry key="app/src/main/res/layout/destination_list_layout.xml" value="0.225" />
+        <entry key="app/src/main/res/layout/edit_layout.xml" value="0.225" />
       </map>
     </option>
   </component>

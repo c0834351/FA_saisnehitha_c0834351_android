@@ -31,7 +31,6 @@ public class DestinationAdapter extends ArrayAdapter {
         this.dbhelper = db;
     }
 
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

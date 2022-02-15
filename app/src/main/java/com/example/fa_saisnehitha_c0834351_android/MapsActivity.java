@@ -12,10 +12,13 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -34,10 +37,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.fa_saisnehitha_c0834351_android.databinding.ActivityMapsBinding;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,19 +74,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double userLat, userLong, destLat, desLong;
     String countryName;
 
-    Button satellite,hybrid,terrain,getSavedDestinations;
+    Button satellite, hybrid, terrain, getSavedDestinations, find;
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         databaseHelper = new DatabaseHelper(this);
-        satellite =findViewById(R.id.btn_satellite);
+        spinner = findViewById(R.id.spinner);
+        find = findViewById(R.id.find_btn);
+        //initialize array of place type list to find
+        String[] placeTypeList = {"atm", "beaches", "restaurants", "schools", "hospitals"};
+        //place names list
+        String[] placeNameList = {"ATM", "BEACHS", "RESTAURANTS", "SCHOOLS", "HOSPITALS"};
+        //set adapter on spinner
+        spinner.setAdapter(new ArrayAdapter<>(MapsActivity.this, android.R.layout.simple_spinner_dropdown_item, placeNameList));
+        satellite = findViewById(R.id.btn_satellite);
         hybrid = findViewById(R.id.btn_hybrid);
         terrain = findViewById(R.id.btn_normal);
         getSavedDestinations = findViewById(R.id.btn_fav_destination);
@@ -99,7 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getSavedDestinations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MapsActivity.this,DestinationActivity.class);
+                Intent intent = new Intent(MapsActivity.this, DestinationActivity.class);
                 startActivityForResult(intent, SECOND_ACTIVITY_REQUEST_CODE);
             }
         });
@@ -114,6 +134,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
         }
+        find.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Get selected position on spinner
+                int i = spinner.getSelectedItemPosition();
+                //Initialize url
+                String url = "https://maps.googleapis.com/maps/api/places/nearbysearch/json" + //url
+                        "?location=?" + userLat + "," + userLong +
+                        "&radius + 5000" +
+                        "&types=" + placeTypeList[i] +
+                        "&sensor=true" +
+                        "&key=" + getResources().getString(R.string.google_maps_key);
+                new PlaceTask().execute(url);
+            }
+        });
     }
 
     private void requestLocationPermission() {
@@ -194,18 +229,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 desLong = latLng.longitude;
                 destLat = latLng.latitude;
                 try {
-                    List<Address> addressList = geocoder.getFromLocation(destLat,desLong,1);
-                    if(addressList.get(0).getCountryName()== null){
+                    List<Address> addressList = geocoder.getFromLocation(destLat, desLong, 1);
+                    if (addressList.get(0).getCountryName() == null) {
                         countryName = "";
-                    }else
+                    } else
                         countryName = addressList.get(0).getCountryName();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println(userLatLng.latitude+"***********************");
-                System.out.println(userLatLng.longitude+"******************");
-                System.out.println(countryName+"******************");
-                if(marker != null){
+                System.out.println(userLatLng.latitude + "***********************");
+                System.out.println(userLatLng.longitude + "******************");
+                System.out.println(countryName + "******************");
+                if (marker != null) {
                     marker.remove();
                 }
                 setDestinationMarker(location);
@@ -218,7 +253,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             public void onClick(DialogInterface dialog, int id) {
                                 addingNextDestion(String.valueOf(destLat), String.valueOf(desLong), countryName);
                                 //addingNextDestion(destLat,desLong,countryName);
-                                if(marker!= null) {
+                                if (marker != null) {
                                     marker.remove();
                                 }
                             }
@@ -242,8 +277,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String date = simpleDateFormat.format(calendar.getTime());
-        favDestination = new FavDestination(countryN,Double.valueOf(lati),Double.valueOf(longi),date);
-        if (databaseHelper.addDestination(favDestination.getAddress(), String.valueOf(favDestination.getLatitude()),String.valueOf(favDestination.getLongitude()), favDestination.getDate()))
+        favDestination = new FavDestination(countryN, Double.valueOf(lati), Double.valueOf(longi), date);
+        if (databaseHelper.addDestination(favDestination.getAddress(), String.valueOf(favDestination.getLatitude()), String.valueOf(favDestination.getLongitude()), favDestination.getDate()))
             Toast.makeText(MapsActivity.this, "Destination added", Toast.LENGTH_SHORT).show();
         else
             Toast.makeText(MapsActivity.this, "Destination is not available:", Toast.LENGTH_SHORT).show();
@@ -257,7 +292,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .snippet("your favourite place to visit")
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        marker =  mMap.addMarker(options);
+        marker = mMap.addMarker(options);
     }
 
     @Override
@@ -275,5 +310,72 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMarkerDragStart(@NonNull Marker marker) {
 
+    }
+
+    private class PlaceTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            String data = null;
+            try {
+                 data = downloadUrl(strings[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            new ParseTask().execute(s);
+        }
+    }
+
+    private String downloadUrl(String string) throws IOException {
+        URL url = new URL(string);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.connect();
+        InputStream stream = connection.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder builder = new StringBuilder();
+        String line = "";
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+        String data = builder.toString();
+        reader.close();
+        return data;
+    }
+
+    private class ParseTask extends AsyncTask<String, Integer, List<HashMap<String,String>>>{
+
+        @Override
+        protected List<HashMap<String, String>> doInBackground(String... strings) {
+            JsonParser jsonParser = new JsonParser();
+            List<HashMap<String,String>> mapList = null;
+            JSONObject object = null;
+            try {
+                object = new JSONObject(strings[0]);
+                mapList = jsonParser.parseResult(object);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return mapList;
+        }
+
+        @Override
+        protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
+            mMap.clear();
+            for(int i = 0; i<hashMaps.size();i++){
+                HashMap<String,String> hashMapList = hashMaps.get(i);
+                double lat = Double.parseDouble(hashMapList.get("lat"));
+                double lng = Double.parseDouble(hashMapList.get("lng"));
+                String name = hashMapList.get("name");
+                LatLng latLng = new LatLng(lat,lng);
+                MarkerOptions options = new MarkerOptions();
+                options.position(latLng);
+                options.title(name);
+                mMap.addMarker(options);
+            }
+        }
     }
 }
