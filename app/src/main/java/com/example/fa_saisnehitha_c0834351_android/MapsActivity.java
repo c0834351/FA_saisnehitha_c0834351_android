@@ -32,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -53,7 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -270,6 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         mMap.setOnMarkerDragListener(this);
+        mMap.setOnMarkerClickListener(this);
 
     }
 
@@ -292,6 +294,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .snippet("your favourite place to visit")
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+        //distance calculate
+        float results[] = new float[10];
+        Location.distanceBetween(userLat,userLong,location.getLatitude(),location.getLongitude(),results);
         marker = mMap.addMarker(options);
     }
 
@@ -310,6 +315,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMarkerDragStart(@NonNull Marker marker) {
 
+    }
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        marker.setDraggable(true);
+        return false;
     }
 
     private class PlaceTask extends AsyncTask<String, Integer, String> {

@@ -43,8 +43,8 @@ public class DestinationActivity extends AppCompatActivity {
             public void create(SwipeMenu menu) {
                 SwipeMenuItem editItem = new SwipeMenuItem(
                         getApplicationContext());
-                editItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
-                        0xCE)));
+                editItem.setBackground(new ColorDrawable(Color.rgb(0x00, 0x66,
+                        0xff)));
                 editItem.setWidth((200));
                 editItem.setTitleSize(20);
                 editItem.setTitleColor(Color.BLACK);
